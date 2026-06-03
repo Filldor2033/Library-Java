@@ -6,6 +6,7 @@ import com.filldor.library.common.exception.NotFoundException;
 import com.filldor.library.entity.Book;
 import com.filldor.library.entity.BookStatus;
 import com.filldor.library.entity.Issue;
+import com.filldor.library.entity.Reader;
 import com.filldor.library.issue.controller.CreateIssueRequest;
 import com.filldor.library.issue.repository.IssueRepository;
 import com.filldor.library.reader.service.ReaderService;
@@ -35,7 +36,7 @@ public class IssueService {
         }
 
         Book book = bookService.getBookById(request.bookId());
-        readerService.getReaderById(request.readerId());
+        Reader reader = readerService.getReaderById(request.readerId());
 
         if (book.getStatus() == BookStatus.ISSUED) {
             throw new BadRequestException("Book with id " + request.bookId() + " is already issued");
@@ -45,8 +46,8 @@ public class IssueService {
         validatePlannedReturnDate(request.plannedReturnDate());
 
         Issue issue = new Issue();
-        issue.setBookId(request.bookId());
-        issue.setReaderId(request.readerId());
+        issue.setBook(book);
+        issue.setReader(reader);
         issue.setIssueDate(LocalDate.now());
         issue.setPlannedReturnDate(resolvePlannedReturnDate(request.plannedReturnDate()));
 
